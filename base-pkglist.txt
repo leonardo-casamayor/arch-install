@@ -23,3 +23,6 @@ nfs-utils
 wpa_supplicant
 avahi
 tlp
+zsh
+zsh-completions
+zsh-syntax-highlighting
