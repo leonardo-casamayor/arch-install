@@ -45,6 +45,7 @@ systemctl enable cups
 systemctl enable tlp
 #systemctl enable reflector.timer
 #systemctl enable firewalld
+#systemctl enable avahi-daemon
 
 #finish
 exit
