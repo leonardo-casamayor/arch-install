@@ -35,7 +35,7 @@ echo "127.0.1.1 arch.localdomain arch" >> /etc/hosts
 #set root passwd
 passwd
 #pacman
-pacman -S --needed < base-pkglist.txt
+pacman -S --needed < pkglist-base.txt
 #grub
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
@@ -43,7 +43,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 systemctl enable NetworkManager
 systemctl enable cups
 systemctl enable tlp
-systemctl enable reflector.timer
+#systemctl enable reflector.timer
 #systemctl enable firewalld
 
 #finish
