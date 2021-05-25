@@ -35,7 +35,7 @@ echo "127.0.1.1 arch.localdomain arch" >> /etc/hosts
 #set root passwd
 passwd
 #pacman
-pacman -S --needed < pkglist-base.txt
+pacman -S --needed --noconfirm < pkglist-base.txt
 #grub
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
