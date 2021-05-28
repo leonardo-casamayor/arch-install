@@ -1,0 +1,8 @@
+beets
+cmus
+kitty
+newsboat
+noto-fonts
+pulsemixer
+spotifyd
+tt-nerd-fonts-symbols-mono

@@ -1,0 +1,4 @@
+arc-gtk-theme
+arc-icon-theme
+bspwm
+sxhkd

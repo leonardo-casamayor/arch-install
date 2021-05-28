@@ -1,0 +1,5 @@
+clyrics
+dynalist
+gotop
+powerlevel10k
+ttf-vista-fonts
