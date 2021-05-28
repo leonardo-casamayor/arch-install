@@ -15,7 +15,9 @@ networkmanager
 network-manager-applet
 nfs-utils
 pacman-contrib
-pulseaudio
+pipewire
+pipewire-alsa
+pipewire-pulse
 reflector
 rsync
 sshfs
