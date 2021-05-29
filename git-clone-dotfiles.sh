@@ -1,7 +1,7 @@
 #!/bin/sh
 
 mkdir -p $HOME/.repos/dotfiles
-git clone --bare git@gitlab.com:leonardo.casamayor/dotfiles.git $HOME/.repos/dotfiles
+git clone --bare https://gitlab.com/leonardo.casamayor/dotfiles.git $HOME/.repos/dotfiles
 function gdf (){
    /usr/bin/git --git-dir=$HOME/.repos/dotfiles --work-tree=$HOME $@
 }

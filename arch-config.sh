@@ -24,7 +24,7 @@ echo "Set your root password:"
 passwd
 #pacman
 echo "Install basic pkgs:"
-pacman -S ifebootmgr grub man-db man-pages pacman-contrib xdg-utils xdg-user-dirs zsh zsh-completions zsh-syntax-highlighting
+pacman -S efibootmgr grub man-db man-pages pacman-contrib xdg-utils xdg-user-dirs zsh zsh-completions zsh-syntax-highlighting
 echo "Install network pkgs:"
 pacman -S networkmanager network-manager-applet reflector sshfs rsync wpa_supplicant
 echo "Install audio pkgs:"
@@ -54,9 +54,12 @@ sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
 echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 #set environment variable for zsh
-echo "export ZDOTDIR=$HOME/.config/zsh" >> /etc/zsh/zshenv
+echo "export ZDOTDIR=\$HOME/.config/zsh" >> /etc/zsh/zshenv
+
+#enable NetworkManager
+systemctl enable NetworkManager
 
 #finish
 exit
-umount -a
+umount -R /mnt
 #reboot

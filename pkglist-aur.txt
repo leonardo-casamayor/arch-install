@@ -1,7 +1,0 @@
-clyrics
-boxes
-dynalist
-gotop
-tmsu-bin
-ttf-vista-fonts
-zsh-theme-powerlevel10k-git
