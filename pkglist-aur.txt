@@ -1,4 +1,5 @@
 clyrics
+boxes
 dynalist
 gotop
 tmsu-bin

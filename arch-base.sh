@@ -5,9 +5,9 @@
 #install stage
 
 timedatectl set-ntp true
-reflector --country Brazil --counrty Chile --latest 6 --sort rate --download-timeout 60 --save /etc/pacman.d/mirrorlist
 pacman -Syy
-pacstrap /mnt base linux linux-firmware vim intel-ucode
+reflector --country Brazil --counrty Chile --latest 6 --sort rate --download-timeout 60 --save /etc/pacman.d/mirrorlist
+pacstrap /mnt base base-devel linux linux-firmware vim git intel-ucode
 
 #configuration stage
 
@@ -27,15 +27,24 @@ echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 #virtual console keyboard layout
 echo "KEYMAP=us" >> /ect/vconsole.conf
 #network
-echo "arch" >> /etc/hostname
+echo "Set your host name:"
+read host
+echo "$host" >> /etc/hostname
 echo "127.0.0.1 localhost" >> /etc/hosts
 echo "::1   localhost" >> /etc/hosts
-echo "127.0.1.1 arch.localdomain arch" >> /etc/hosts
+echo "127.0.1.1 $host.localdomain $host" >> /etc/hosts
 #initramfs (for encyption only)
 #set root passwd
+echo "Set your root password:"
 passwd
 #pacman
-pacman -S --needed --noconfirm < pkglist-base.txt
+echo "Install basic pkgs:"
+pacman -S ifebootmgr grub man-db man-pages pacman-contrib xdg-utils xdg-user-dirs zsh zsh-completions zsh-syntax-highlighting
+echo "Install network pkgs:"
+pacman -S networkmanager network-manager-applet reflector sshfs rsync wpa_supplicant
+echo "Install audio pkgs:"
+pacman -S alsa-utils pipewire pipewire-alsa pipewire-pulse
+
 #grub
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg

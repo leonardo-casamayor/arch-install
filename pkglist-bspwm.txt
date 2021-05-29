@@ -1,6 +1,0 @@
-arc-gtk-theme
-arc-icon-theme
-bspwm
-lxappearance
-picom
-sxhkd

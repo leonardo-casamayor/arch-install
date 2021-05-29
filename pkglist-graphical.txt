@@ -1,6 +1,0 @@
-firefox
-pcmanfm
-rofi
-scrot
-syncthing
-xorg

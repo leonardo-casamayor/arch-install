@@ -1,9 +1,0 @@
-bat
-ffmpeg
-fzf
-htop
-ipref3
-ripgrep
-speedtest-cli
-tree
-youtube-dl

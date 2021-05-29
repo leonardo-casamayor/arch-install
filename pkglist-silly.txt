@@ -1,7 +1,0 @@
-boxes
-cmatrix
-cowsay
-figlet
-lolcat
-neofetch
-sl
