@@ -1,20 +1,5 @@
 #!/bin/sh
 
-#run this script this after formating and mounting partitions
-
-#install stage
-
-timedatectl set-ntp true
-pacman -Syy
-reflector --country Brazil --counrty Chile --latest 6 --sort rate --download-timeout 60 --save /etc/pacman.d/mirrorlist
-pacstrap /mnt base base-devel linux linux-firmware vim git intel-ucode
-
-#configuration stage
-
-#generate fstab
-genfstab -U /mnt >> /mnt/etc/fstab
-#chroot
-arch-chroot /mnt
 #set timezone
 ln -sf /usr/share/zoneinfo/America/Argentina/Buenos_Aires /etc/localtime
 #sync hardware clock
@@ -48,13 +33,28 @@ pacman -S alsa-utils pipewire pipewire-alsa pipewire-pulse
 #grub
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
-#enable system services
-systemctl enable NetworkManager
-systemctl enable cups
-systemctl enable tlp
-#systemctl enable reflector.timer
-#systemctl enable firewalld
-#systemctl enable avahi-daemon
+
+#create user
+echo "Create a new user:"
+read user
+useradd -m -s /bin/zsh $user
+echo "Set user password:"
+passwd $user
+usermod -aG wheel $user
+
+#set ntp
+timedatectl set-ntp true
+#pacman config
+reflector --country Brazil --counrty Chile --latest 6 --sort rate --download-timeout 60 --save /etc/pa
+pacman -Syy
+sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
+#add custom repos
+
+#sudoers
+echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+#set environment variable for zsh
+echo "export ZDOTDIR=$HOME/.config/zsh" >> /etc/zsh/zshenv
 
 #finish
 exit

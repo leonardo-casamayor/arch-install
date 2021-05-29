@@ -1,28 +1,5 @@
 #!/bin/sh
 
-#create user
-echo "Create a new user:"
-read user
-useradd -m -s /bin/zsh $user
-echo "Set user password:"
-passwd $user
-usermod -aG wheel $user
-
-timedatectl set-ntp true
-hwclock --systohc
-pacman -Syy
-reflector --country Brazil --counrty Chile --latest 6 --sort rate --download-timeout 60 --save /etc/pacman.d/mirrorlist
-
-#sudoers
-echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-#pacman config
-sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
-#add custom repos
-
-#set environment variable for zsh
-echo "export ZDOTDIR=$HOME/.config/zsh" >> /etc/zsh/zshenv
-
 #install pkgs
 echo "Install basic pkgs:"
 pacman -S cifs-utils cups dosfstools mtools nfs-utils tlp
@@ -37,3 +14,12 @@ pacman -S firefox pcmanfm rofi scrot syncthing xorg-server xorg-apps xorg-init
 echo "Install bspwm pkgs:"
 pacman -S arc-gtk-theme arc-icon-theme bspwm lxappearance picom sxhkd
 #install yay and aur pkgs
+mkdir -p .repos/dotfiles
+
+#enable system services
+systemctl enable NetworkManager
+systemctl enable cups
+systemctl enable tlp
+#systemctl enable reflector.timer
+#systemctl enable firewalld
+#systemctl enable avahi-daemon
