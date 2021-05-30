@@ -2,17 +2,17 @@
 
 #install pkgs
 echo "Install basic pkgs:"
-pacman -S cifs-utils cups dosfstools mtools nfs-utils tlp
+sudo pacman -S --noconfirm cifs-utils cups dosfstools mtools nfs-utils tlp
 echo "Install silly pkgs:"
-pacman -S cmatrix cowsay figlet lolcat neofetch sl
+sudo pacman -S --noconfirm cmatrix cowsay figlet lolcat neofetch sl
 echo "Install utilities pkgs:"
-pacman -S bat ffmpeg ffmpegthumbnailer fzf htop iperf3 ripgrep speedtest-cli tree youtube-dl
+sudo pacman -S --noconfirm bat ffmpeg ffmpegthumbnailer fzf htop iperf3 ripgrep speedtest-cli tree youtube-dl
 echo "Install terminal pkgs:"
-pacman -S beets cmus newsboat noto-fonts pulsemixer spotifyd ttf-nerd-fonts-symbols-mono kitty feh sxiv
+sudo pacman -S --noconfirm beets cmus newsboat noto-fonts pulsemixer spotifyd ttf-nerd-fonts-symbols-mono kitty feh sxiv
 echo "Install graphical pkgs:"
-pacman -S firefox pcmanfm rofi scrot syncthing xorg-server xorg-apps xorg-xinit
+sudo pacman -S --noconfirm firefox pcmanfm rofi scrot syncthing xorg-server xorg-apps xorg-xinit
 echo "Install bspwm pkgs:"
-pacman -S arc-gtk-theme arc-icon-theme bspwm lxappearance picom sxhkd
+sudo pacman -S --noconfirm arc-gtk-theme arc-icon-theme bspwm lxappearance picom sxhkd
 
 #clone dotfiles
 mkdir -p $HOME/.repos/dotfiles

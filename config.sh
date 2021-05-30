@@ -24,11 +24,11 @@ echo "Set your root password:"
 passwd
 #pacman
 echo "Install basic pkgs:"
-pacman -S efibootmgr grub man-db man-pages pacman-contrib xdg-utils xdg-user-dirs zsh zsh-completions zsh-syntax-highlighting
+pacman -S --noconfirm efibootmgr grub man-db man-pages pacman-contrib polkit polkit-gnome xdg-utils zsh zsh-completions zsh-syntax-highlighting
 echo "Install network pkgs:"
-pacman -S networkmanager network-manager-applet reflector sshfs rsync wpa_supplicant
+pacman -S --noconfirm networkmanager network-manager-applet reflector sshfs rsync wpa_supplicant
 echo "Install audio pkgs:"
-pacman -S alsa-utils pipewire pipewire-alsa pipewire-pulse
+pacman -S --noconfirm alsa-utils pipewire pipewire-alsa pipewire-pulse
 
 #grub
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
