@@ -17,4 +17,8 @@ genfstab -U /mnt >> /mnt/etc/fstab
 #copy scripts to use later and then chroot to finish installation
 mkdir /mnt/arch-install
 cp /arch-install/* /mnt/arch-install
-arch-chroot /mnt ./arch-install/arch-config.sh
+arch-chroot /mnt ./arch-install/config.sh
+
+#finish
+umount -R /mnt
+#reboot

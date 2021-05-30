@@ -38,3 +38,5 @@ systemctl --user enable --now syncthing
 #systemctl enable reflector.timer
 #systemctl enable firewalld
 #systemctl enable avahi-daemon
+
+#add sym links

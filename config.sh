@@ -58,8 +58,3 @@ echo "export ZDOTDIR=\$HOME/.config/zsh" >> /etc/zsh/zshenv
 
 #enable NetworkManager
 systemctl enable NetworkManager
-
-#finish
-exit
-umount -R /mnt
-#reboot
