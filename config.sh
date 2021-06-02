@@ -10,7 +10,7 @@ echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 #virtual console keyboard layout
-echo "KEYMAP=us" >> /ect/vconsole.conf
+localectl set-keymap --no-convert us
 #network
 echo "Set your host name:"
 read host
@@ -41,6 +41,9 @@ useradd -m -s /bin/zsh $user
 echo "Set user password:"
 passwd $user
 usermod -aG wheel $user
+
+#make the user the owner of the destop environment install scripts
+chmod $user:$user /arch-install/bspwm.sh
 
 #set ntp
 timedatectl set-ntp true

@@ -20,10 +20,10 @@ mkdir -p $HOME/.repos/dotfiles
 
 #install yay and aur pkgs
 mkdir $HOME/.repos/yay
-git clone https://aur.archlinux.org/yay.git /.repos/yay
+git clone https://aur.archlinux.org/yay.git $HOME/.repos/yay
 cd $HOME/.repos/yay
 makepkg -si 
-yay -S gotop clyrics tmsu-bin boxes zsh-theme-powerlevel10k-git ttf-vista-fonts
+yay -S gotop clyrics tmsu-bin boxes zsh-theme-powerlevel10k-git ttf-vista-fonts polybar
 
 #clone wallpapers repo
 mkdir $HOME/.repos/wallpapers
