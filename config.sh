@@ -11,6 +11,8 @@ locale-gen
 echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 #virtual console keyboard layout
 localectl set-keymap --no-convert us
+#set X keymap
+localectl set-x11-keymap us
 #network
 echo "Set your host name:"
 read host
