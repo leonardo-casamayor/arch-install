@@ -82,3 +82,4 @@ echo "export ZDOTDIR=\$HOME/.config/zsh" >> /etc/zsh/zshenv
 systemctl enable NetworkManager
 systemctl enable cups
 systemctl enable tlp
+#systemctl enable gdm
