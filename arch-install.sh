@@ -62,7 +62,7 @@ pacstrap /mnt base base-devel linux linux-firmware vim git intel-ucode efibootmg
 #generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
 #enter chroot environment
-arch-chroot /mnt sh -c '
+#arch-chroot /mnt sh -c '
 
 #source variables
 source /config.sh
@@ -90,22 +90,35 @@ grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 
 #####Install extra packages#####
-echo "Install basic pkgs:"
-pacman -S --noconfirm man-db man-pages pacman-contrib polkit polkit-gnome xdg-utils cifs-utils cups hplip dosfstools mtools nfs-utils tlp
-echo "Install network pkgs:"
-pacman -S --noconfirm network-manager-applet reflector sshfs rsync wpa_supplicant
-echo "Install audio pkgs:"
-pacman -S --noconfirm alsa-utils pipewire pipewire-alsa pipewire-pulse
-echo "Install silly pkgs:"
-sudo pacman -S --noconfirm cmatrix cowsay figlet lolcat neofetch sl
-echo "Install utilities pkgs:"
-sudo pacman -S --noconfirm bat ffmpeg ffmpegthumbnailer fzf htop iperf3 ripgrep speedtest-cli tree youtube-dl
-echo "Install terminal pkgs:"
-sudo pacman -S --noconfirm beets cmus newsboat noto-fonts pulsemixer spotifyd ttf-nerd-fonts-symbols-mono kitty feh sxiv
-echo "Install graphical pkgs:"
-sudo pacman -S --noconfirm firefox pcmanfm rofi scrot syncthing xorg-server xorg-apps xorg-xinit
-echo "Install bspwm pkgs:"
-sudo pacman -S --noconfirm arc-gtk-theme arc-icon-theme bspwm lxappearance picom sxhkd
+pkgFile="/pkglist.txt"
+#download pkglist
+curl -L -o $pkgFile $pkglistURL
+#remove comments
+sed -i '/^#.*/d' $pkgFile
+#install pkgs with pacman
+while read pkg
+    do
+        pacman --needed --noconfirm -S $pkg
+    done < $pkgFile
+
+rm $pkgFile
+
+#echo "Install basic pkgs:"
+#pacman -S --noconfirm man-db man-pages pacman-contrib polkit polkit-gnome xdg-utils cifs-utils cups hplip dosfstools mtools nfs-utils tlp
+#echo "Install network pkgs:"
+#pacman -S --noconfirm network-manager-applet reflector sshfs rsync wpa_supplicant
+#echo "Install audio pkgs:"
+#pacman -S --noconfirm alsa-utils pipewire pipewire-alsa pipewire-pulse
+#echo "Install silly pkgs:"
+#sudo pacman -S --noconfirm cmatrix cowsay figlet lolcat neofetch sl
+#echo "Install utilities pkgs:"
+#sudo pacman -S --noconfirm bat ffmpeg ffmpegthumbnailer fzf htop iperf3 ripgrep speedtest-cli tree youtube-dl
+#echo "Install terminal pkgs:"
+#sudo pacman -S --noconfirm beets cmus newsboat noto-fonts pulsemixer spotifyd ttf-nerd-fonts-symbols-mono kitty feh sxiv
+#echo "Install graphical pkgs:"
+#sudo pacman -S --noconfirm firefox pcmanfm rofi scrot syncthing xorg-server xorg-apps xorg-xinit
+#echo "Install bspwm pkgs:"
+#sudo pacman -S --noconfirm arc-gtk-theme arc-icon-theme bspwm lxappearance picom sxhkd
 #echo "Install gnome pkgs:"
 #sudo pacman -S --noconfirm gnome gnome-tweaks gnome-shell-extension-appindicator
 #echo "Install fonts pkgs:"
