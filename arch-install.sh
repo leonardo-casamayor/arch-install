@@ -38,7 +38,7 @@ echo "vconsolekeymap=$vconsolekeymap" >> $configFile
 echo "x11keymap=$x11keymap" >> $configFile
 echo "usershell=$usershell" >> $configFile
 echo "pkglistURL=$pkglistURL" >> $configFile
-echo "services=$services" >> $configFile
+echo "services=${services[@]}" >> $configFile
 chmod +x $configFile
 #copy post install variables
 userFile="/mnt/userFile.sh"
@@ -47,9 +47,7 @@ echo "dotfiles=$dotfiles" >> $userFile
 echo "aurhelper=$aurhelper" >> $userFile
 echo "aurhelper=$aurhelperURL" >> $userFile
 echo "wallpapers=$wallpapers" >> $userFile
-echo "userservices=$userservices" >> $userFile
-echo "bspwm=$bspwm" >> $userFile
-echo "gnome=$gnome" >> $userFile
+echo "userservices=${userservices[@]}" >> $userFile
 chmod +x $userFile
 
 #####Install stage#####
@@ -62,7 +60,7 @@ pacstrap /mnt base base-devel linux linux-firmware vim git intel-ucode efibootmg
 #generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
 #enter chroot environment
-#arch-chroot /mnt sh -c '
+arch-chroot /mnt sh -c '
 
 #source variables
 source /config.sh
@@ -157,9 +155,14 @@ echo "root:$rootpass" | chpasswd
 chmod $user:$user /userFile.sh
 
 #####Enable systemd services#####
-systemctl enable NetworkManager
-systemctl enable cups
-systemctl enable tlp
+for service in "{services[@]}"
+    do
+        systemctl enable $service
+    done
+
+# systemctl enable NetworkManager
+# systemctl enable cups
+# systemctl enable tlp
 #systemctl enable gdm
 
 #####Run script as created user####
@@ -197,8 +200,12 @@ makepkg -si
 $aurhelper -S zsh-theme-powerlevel10k-git polybar
 
 #####Enable user services#####
+for service in "{userservices[@]}"
+    do
+        systemctl --user enable $service
+    done
 #user services
-systemctl --user enable --now syncthing
+#systemctl --user enable --now syncthing
 
 #systemctl enable reflector.timer
 #systemctl enable firewalld
