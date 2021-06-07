@@ -1,8 +1,9 @@
 #!/bin/sh
 
 #run this script this after formating and mounting partitions
+
 #####Define variables#####
-user=
+user="leonardo"
 userpass=
 rootpass=
 hostname="azb-ext"
@@ -12,64 +13,61 @@ lang="en_US.UTF-8"
 vconsolekeymap="us"
 x11keymap="us"
 usershell="zsh"
-pkglistURL=
+pkglistURL="https://gitlab.com/leonardo.casamayor/dotfiles/-/raw/master/.config/pkglists/pkgs.txt"
+aurpkglistURL="https://gitlab.com/leonardo.casamayor/dotfiles/-/raw/master/.config/pkglists/aur.txt"
 #repos
 aurhelper="yay"
 aurhelperURL="https://aur.archlinux.org/yay.git"
 dotfiles="https://gitlab.com/leonardo.casamayor/dotfiles.git"
 wallpapers="https://gitlab.com/leonardo.casamayor/wallpapers.git"
-#desktop environments (true/false)
-bspwm= true
-gnome= false
 #systemctl service to enable
 userservices=(syncthing)
 services=(NetworkManager cups tlp)
 
 #####Copy variables to files#####
 #copy config variables
-echo "#!/bin/sh" >> /mnt/config.sh
-echo "userpass=$userpass" >> /mnt/config.sh
-echo "rootpass=$rootpass" >> /mnt/config.sh
-echo "hostname=$hostname" >> /mnt/config.sh
-echo "timezone=$timezone" >> /mnt/config.sh
-echo "locale=$locale" >> /mnt/config.sh
-echo "lang=$lang" >> /mnt/config.sh
-echo "vconsolekeymap=$vconsolekeymap" >> /mnt/config.sh
-echo "x11keymap=$x11keymap" >> /mnt/config.sh
-echo "usershell=$usershell" >> /mnt/config.sh
-echo "pkglistURL=$pkglistURL" >> /mnt/config.sh
-echo "services=$services" >> /mnt/config.sh
-chmod +x /mnt/config.sh
+configFile="/mnt/config.sh"
+echo "#!/bin/sh" >> $configFile
+echo "userpass=$userpass" >> $configFile
+echo "rootpass=$rootpass" >> $configFile
+echo "hostname=$hostname" >> $configFile
+echo "timezone=$timezone" >> $configFile
+echo "locale=$locale" >> $configFile
+echo "lang=$lang" >> $configFile
+echo "vconsolekeymap=$vconsolekeymap" >> $configFile
+echo "x11keymap=$x11keymap" >> $configFile
+echo "usershell=$usershell" >> $configFile
+echo "pkglistURL=$pkglistURL" >> $configFile
+echo "services=$services" >> $configFile
+chmod +x $configFile
 #copy post install variables
-echo "#!/bin/sh" >> /mnt/home/$user/postinstall.sh
-echo "dotfiles=$dotfiles" >> /mnt/home/$user/postinstall.sh
-echo "aurhelper=$aurhelper" >> /mnt/home/$user/postinstall.sh
-echo "aurhelper=$aurhelperURL" >> /mnt/home/$user/postinstall.sh
-echo "wallpapers=$wallpapers" >> /mnt/home/$user/postinstall.sh
-echo "userservices=$userservices" >> /mnt/home/$user/postinstall.sh
-echo "bspwm=$bspwm" >> /mnt/home/$user/postinstall.sh
-echo "gnome=$gnome" >> /mnt/home/$user/postinstall.sh
-chmod +x /mnt/home/$user/postinstall.sh
+userFile="/mnt/userFile.sh"
+echo "#!/bin/sh" >> $userFile
+echo "dotfiles=$dotfiles" >> $userFile
+echo "aurhelper=$aurhelper" >> $userFile
+echo "aurhelper=$aurhelperURL" >> $userFile
+echo "wallpapers=$wallpapers" >> $userFile
+echo "userservices=$userservices" >> $userFile
+echo "bspwm=$bspwm" >> $userFile
+echo "gnome=$gnome" >> $userFile
+chmod +x $userFile
 
 #####Install stage#####
 timedatectl set-ntp true
 pacman -Syy
 reflector --country Brazil --counrty Chile --latest 6 --sort rate --download-timeout 60 --save /etc/pacman.d/mirrorlist
-pacstrap /mnt base base-devel linux linux-firmware vim git intel-ucode efibootmgr grub networkmanager zsh
+pacstrap /mnt base base-devel linux linux-firmware vim git intel-ucode efibootmgr grub networkmanager
 
 #####Configuration stage#####
 #generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
-#copy scripts to use later
-mkdir /mnt/arch-install
-cp /root/arch-install/* /mnt/arch-install
 #enter chroot environment
 arch-chroot /mnt sh -c '
 
 #source variables
-source config.sh
+source /config.sh
 #remove file
-rm config.sh
+rm /config.sh
 
 #####Installation config#####
 #set timezone
@@ -93,7 +91,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 #####Install extra packages#####
 echo "Install basic pkgs:"
-pacman -S --noconfirm man-db man-pages pacman-contrib polkit polkit-gnome xdg-utils zsh-completions zsh-syntax-highlighting cifs-utils cups hplip dosfstools mtools nfs-utils tlp
+pacman -S --noconfirm man-db man-pages pacman-contrib polkit polkit-gnome xdg-utils cifs-utils cups hplip dosfstools mtools nfs-utils tlp
 echo "Install network pkgs:"
 pacman -S --noconfirm network-manager-applet reflector sshfs rsync wpa_supplicant
 echo "Install audio pkgs:"
@@ -113,18 +111,7 @@ sudo pacman -S --noconfirm arc-gtk-theme arc-icon-theme bspwm lxappearance picom
 #echo "Install fonts pkgs:"
 #meslo hack source-code-pro
 
-#####Create user#####
-useradd -m -s /bin/$usershell $user
-echo "$user:$userpass" | chpasswd
-usermod -aG wheel $user
-echo "root:$rootpass" | chpasswd
-
-#make the user the owner of the post install variables file
-chmod $user:$user /mnt/home/$user/postinstall.sh
-
 #####Basic config#####
-#set passwords
-
 #set ntp
 timedatectl set-ntp true
 #virtual console keymap
@@ -139,8 +126,22 @@ sed -i "s/^#Color$/Color/" /etc/pacman.conf
 #add pacman custom repos
 #sudoers
 echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+#zsh setup
+if [ $usershell = "zsh" ]; then
+#install zsh
+    pacman --noconfirm --needed -S zsh zsh-completions zsh-syntax-highlighting
 #set environment variable for zsh
-echo "export ZDOTDIR=\$HOME/.config/zsh" >> /etc/zsh/zshenv
+    echo "export ZDOTDIR=\$HOME/.config/zsh" >> /etc/zsh/zshenv
+fi;
+
+#####Create user#####
+useradd -m -s /bin/$usershell $user
+echo "$user:$userpass" | chpasswd
+usermod -aG wheel $user
+echo "root:$rootpass" | chpasswd
+
+#make the user the owner of the post install variables file
+chmod $user:$user /userFile.sh
 
 #####Enable systemd services#####
 systemctl enable NetworkManager
@@ -153,9 +154,9 @@ su $user sh -c '
 
 #source variables
 user="$(whoami)"
-source /home/$user/postinstall.sh
+source /userFile.sh
 #remove file
-rm /home/$user/postinstall.sh
+rm /userFile.sh
 
 #####Clone repos#####
 #dotfiles
@@ -181,9 +182,6 @@ git clone $aurhelperURL $HOME/.repos/$aurhelper
 cd $HOME/.repos/$aurhelper
 makepkg -si 
 $aurhelper -S zsh-theme-powerlevel10k-git polybar
-#yay -S gotop clyrics tmsu-bin boxes ttf-vista-fonts
-#gnome extensions
-#yay gnome-shell-extension-arch-update gnome-shell-extension-pop-shell gnome-shell-extension-sound-output-device-chooser gnome-shell-extensionespresso-git 
 
 #####Enable user services#####
 #user services
