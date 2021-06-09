@@ -4,14 +4,13 @@
 
 #####Define variables#####
 user="leonardo"
-userpass=
-rootpass=
+userpass=""
+rootpass=""
 hostname="azb-ext"
 timezone="America/Argentina/Buenos_Aires"
 locale="en_US.UTF-8 UTF-8"
 lang="en_US.UTF-8"
 vconsolekeymap="us"
-x11keymap="us"
 usershell="zsh"
 pkglistURL="https://gitlab.com/leonardo.casamayor/dotfiles/-/raw/master/.config/pkglists/pkgs.txt"
 aurpkglistURL="https://gitlab.com/leonardo.casamayor/dotfiles/-/raw/master/.config/pkglists/aur.txt"
@@ -28,26 +27,26 @@ services=(NetworkManager cups tlp)
 #copy config variables
 configFile="/mnt/config.sh"
 echo "#!/bin/sh" >> $configFile
-echo "userpass=$userpass" >> $configFile
-echo "rootpass=$rootpass" >> $configFile
-echo "hostname=$hostname" >> $configFile
-echo "timezone=$timezone" >> $configFile
-echo "locale=$locale" >> $configFile
-echo "lang=$lang" >> $configFile
-echo "vconsolekeymap=$vconsolekeymap" >> $configFile
-echo "x11keymap=$x11keymap" >> $configFile
-echo "usershell=$usershell" >> $configFile
-echo "pkglistURL=$pkglistURL" >> $configFile
-echo "services=${services[@]}" >> $configFile
+echo "user=\"$user\"" >> $configFile
+echo "userpass=\"$userpass\"" >> $configFile
+echo "rootpass=\"$rootpass\"" >> $configFile
+echo "hostname=\"$hostname\"" >> $configFile
+echo "timezone=\"$timezone\"" >> $configFile
+echo "locale=\"$locale\"" >> $configFile
+echo "lang=\"$lang\"" >> $configFile
+echo "vconsolekeymap=\"$vconsolekeymap\"" >> $configFile
+echo "usershell=\"$usershell\"" >> $configFile
+echo "pkglistURL=\"$pkglistURL\"" >> $configFile
+echo "services=(${services[@]})" >> $configFile
 chmod +x $configFile
 #copy post install variables
 userFile="/mnt/userFile.sh"
 echo "#!/bin/sh" >> $userFile
-echo "dotfiles=$dotfiles" >> $userFile
-echo "aurhelper=$aurhelper" >> $userFile
-echo "aurhelper=$aurhelperURL" >> $userFile
-echo "wallpapers=$wallpapers" >> $userFile
-echo "userservices=${userservices[@]}" >> $userFile
+echo "dotfiles=\"$dotfiles\"" >> $userFile
+echo "aurhelper=\"$aurhelper\"" >> $userFile
+echo "aurhelper=\"$aurhelperURL\"" >> $userFile
+echo "wallpapers=\"$wallpapers\"" >> $userFile
+echo "userservices=(${userservices[@]})" >> $userFile
 chmod +x $userFile
 
 #####Install stage#####
@@ -78,10 +77,10 @@ echo "$locale" >> /etc/locale.gen
 locale-gen
 echo "$lang" >> /etc/locale.conf
 #network
-echo "$host" >> /etc/hostname
+echo "$hostname" >> /etc/hostname
 echo "127.0.0.1 localhost" >> /etc/hosts
 echo "::1   localhost" >> /etc/hosts
-echo "127.0.1.1 $host.localdomain $host" >> /etc/hosts
+echo "127.0.1.1 $hostname.localdomain $hostname" >> /etc/hosts
 #initramfs (for encyption only)
 #grub
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
@@ -127,8 +126,6 @@ rm $pkgFile
 timedatectl set-ntp true
 #virtual console keymap
 localectl set-keymap --no-convert $vconsolekeymap
-#set X keymap
-localectl set-x11-keymap $x11keymap
 #pacman config
 reflector --country Brazil --counrty Chile --latest 6 --sort rate --download-timeout 60 --save /etc/pa
 pacman -Syy
@@ -152,7 +149,7 @@ usermod -aG wheel $user
 echo "root:$rootpass" | chpasswd
 
 #make the user the owner of the post install variables file
-chmod $user:$user /userFile.sh
+chwon $user:$user /userFile.sh
 
 #####Enable systemd services#####
 for service in "{services[@]}"
