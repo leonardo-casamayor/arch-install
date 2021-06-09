@@ -137,7 +137,7 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	    done
 	
 	#####Run script as created user####
-	su $user sh - << 'EOUSER'
+	su $user sh -c '
 	
 	#source variables
 	user="$(whoami)"
@@ -153,12 +153,6 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	   /usr/bin/git --git-dir=$HOME/.repos/dotfiles --work-tree=$HOME $@
 	}
 	gdf checkout
-	if [ $? = 0 ]; then
-	  else
-	    mkdir $HOME/config-backup
-	    gdf checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} mv {} $HOME/config-backup/{}
-	fi;
-	gdf checkout
 	gdf config status.showUntrackedFiles no
 	#clone wallpapers repo
 	mkdir $HOME/.repos/wallpapers
@@ -167,7 +161,7 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	mkdir $HOME/.repos/$aurhelper
 	git clone $aurhelperURL $HOME/.repos/$aurhelper
 	cd $HOME/.repos/$aurhelper
-	makepkg -si 
+	makepkg -si --noconfirm
 	
 	#####Install aur packages#####
 	aurFile="$HOME/aurlist.txt"
@@ -189,7 +183,7 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	        systemctl --user enable $service
 	    done
 
-EOUSER
+'
 
 EOCHROOT
 
