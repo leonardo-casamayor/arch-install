@@ -149,7 +149,7 @@ usermod -aG wheel $user
 echo "root:$rootpass" | chpasswd
 
 #make the user the owner of the post install variables file
-chwon $user:$user /userFile.sh
+chown $user:$user /userFile.sh
 
 #####Enable systemd services#####
 for service in "{services[@]}"
