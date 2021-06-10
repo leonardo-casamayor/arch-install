@@ -113,7 +113,8 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	sed -i "s/^#Color$/Color/" /etc/pacman.conf
 	#add pacman custom repos
 	#sudoers
-	echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+	echo "Defaults insults" >> /etc/sudoers.d/01-Insults
+	echo "$user $hostname=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/02-Nopasswd
 	#zsh setup
 	if [ $usershell = "zsh" ]; then
 	#install zsh
