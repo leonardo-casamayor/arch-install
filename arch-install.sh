@@ -26,7 +26,7 @@ services=(NetworkManager cups tlp)
 #####Copy variables to files#####
 #copy config variables
 configFile="/mnt/config.sh"
-echo "#!/bin/sh" >> $configFile
+echo "#!/bin/sh" > $configFile
 echo "user=\"$user\"" >> $configFile
 echo "userpass=\"$userpass\"" >> $configFile
 echo "rootpass=\"$rootpass\"" >> $configFile
@@ -41,11 +41,12 @@ echo "services=(${services[@]})" >> $configFile
 chmod +x $configFile
 #copy post install variables
 userFile="/mnt/userFile.sh"
-echo "#!/bin/sh" >> $userFile
+echo "#!/bin/sh" > $userFile
 echo "dotfiles=\"$dotfiles\"" >> $userFile
 echo "aurhelper=\"$aurhelper\"" >> $userFile
 echo "aurhelperURL=\"$aurhelperURL\"" >> $userFile
 echo "wallpapers=\"$wallpapers\"" >> $userFile
+echo "aurpkglistURL=\"$aurpkglistURL\"" >> $userFile
 echo "userservices=(${userservices[@]})" >> $userFile
 chmod +x $userFile
 
@@ -188,5 +189,5 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 EOCHROOT
 
 #finish
-#umount -R /mnt
-#reboot
+umount -R /mnt
+reboot
