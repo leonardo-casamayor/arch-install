@@ -52,8 +52,8 @@ chmod +x $userFile
 
 #####Install stage#####
 timedatectl set-ntp true
-pacman -Syy
 reflector --country Brazil --counrty Chile --latest 6 --sort rate --download-timeout 60 --save /etc/pacman.d/mirrorlist
+pacman -Syy
 pacstrap /mnt base base-devel linux linux-firmware vim git intel-ucode efibootmgr grub networkmanager
 
 #####Configuration stage#####
