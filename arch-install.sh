@@ -54,8 +54,7 @@ chmod +x $userFile
 
 #####Install stage#####
 timedatectl set-ntp true
-reflector --country Brazil --counrty Chile --latest 6 --sort rate --download-timeout 60 --save /etc/pacman.d/mirrorlist
-read _
+#reflector --country Brazil,Chile --latest 6 --sort rate --download-timeout 60 --save /etc/pacman.d/mirrorlist
 pacman -Syy
 pacstrap /mnt base base-devel linux linux-firmware vim git intel-ucode efibootmgr grub networkmanager
 
@@ -88,7 +87,6 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	#grub
 	grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 	grub-mkconfig -o /boot/grub/grub.cfg
-    read _
 	
 	#####Install extra packages#####
 	pkgFile="/pkglist.txt"
@@ -105,14 +103,8 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	rm $pkgFile
 	
 	#####Basic config#####
-	#set ntp
-	timedatectl set-ntp true
-	#virtual console keymap
-	localectl set-keymap --no-convert $vconsolekeymap
-	#virtual x11 keymap
-	localectl set-x11-keymap --no-convert $x11keymap
 	#pacman config
-	reflector --country Brazil --counrty Chile --latest 6 --sort rate --download-timeout 60 --save /etc/pa
+	#reflector --country Brazil,Chile --latest 6 --sort rate --download-timeout 60 --save /etc/pa
 	pacman -Syy
 	sed -i "/#VerbosePkgLists/a ILoveCandy" /etc/pacman.conf
 	sed -i "s/^#Color$/Color/" /etc/pacman.conf
@@ -120,7 +112,6 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	#sudoers
 	echo "Defaults insults" >> /etc/sudoers.d/01-Insults
 	echo "$user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/02-Nopasswd
-    read _
 	#zsh setup
 	if [ $usershell = "zsh" ]; then
 	#install zsh
@@ -144,7 +135,7 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	    done
 	
 	#####Run script as created user####
-	su $user sh -c '
+	su $user sh - << 'EOF'
 	
 	#source variables
 	user="$(whoami)"
@@ -169,7 +160,6 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	git clone $aurhelperURL $HOME/.repos/$aurhelper
 	cd $HOME/.repos/$aurhelper
 	makepkg -si --noconfirm
-    read _
 	
 	#####Install aur packages#####
 	aurFile="$HOME/aurlist.txt"
@@ -190,9 +180,16 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	    do
 	        systemctl --user enable $service
 	    done
-    read _
 
-'
+EOF
+
+#####Final Setup#####
+#set ntp
+timedatectl set-ntp true
+#virtual console keymap
+localectl set-keymap --no-convert $vconsolekeymap
+#virtual x11 keymap
+localectl set-x11-keymap --no-convert $x11keymap
 
 EOCHROOT
 
