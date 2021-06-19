@@ -183,7 +183,6 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	        $aurhelper --needed --noconfirm -S $pkg
 	    done < $aurFile
 	
-    read _
 	rm $aurFile
 	
 	#####Enable user services#####
@@ -191,6 +190,7 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	    do
 	        systemctl --user enable $service
 	    done
+    read _
 
 '
 
