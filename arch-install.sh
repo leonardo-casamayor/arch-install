@@ -6,12 +6,12 @@
 user="leonardo"
 userpass=""
 rootpass=""
-hostname="azb-ext"
+hostname="azbe"
 timezone="America/Argentina/Buenos_Aires"
 locale="en_US.UTF-8 UTF-8"
 lang="en_US.UTF-8"
 vconsolekeymap="us"
-x11keymap="us"
+#x11keymap="us"
 usershell="zsh"
 pkglistURL="https://gitlab.com/leonardo.casamayor/dotfiles/-/raw/master/.config/pkglists/pkgs.txt"
 aurpkglistURL="https://gitlab.com/leonardo.casamayor/dotfiles/-/raw/master/.config/pkglists/aur.txt"
@@ -26,30 +26,31 @@ services=(NetworkManager cups tlp)
 
 #####Copy variables to files#####
 #copy config variables
-configFile="/mnt/config.sh"
-echo "#!/bin/sh" > $configFile
-echo "user=\"$user\"" >> $configFile
-echo "userpass=\"$userpass\"" >> $configFile
-echo "rootpass=\"$rootpass\"" >> $configFile
-echo "hostname=\"$hostname\"" >> $configFile
-echo "timezone=\"$timezone\"" >> $configFile
-echo "locale=\"$locale\"" >> $configFile
-echo "lang=\"$lang\"" >> $configFile
-echo "vconsolekeymap=\"$vconsolekeymap\"" >> $configFile
-echo "x11keymap=\"$x11keymap\"" >> $configFile
-echo "usershell=\"$usershell\"" >> $configFile
-echo "pkglistURL=\"$pkglistURL\"" >> $configFile
-echo "services=(${services[@]})" >> $configFile
-chmod +x $configFile
+#configFile="/mnt/config.sh"
+#echo "#!/bin/sh" > $configFile
+#echo "user=\"$user\"" >> $configFile
+#echo "userpass=\"$userpass\"" >> $configFile
+#echo "rootpass=\"$rootpass\"" >> $configFile
+#echo "hostname=\"$hostname\"" >> $configFile
+#echo "timezone=\"$timezone\"" >> $configFile
+#echo "locale=\"$locale\"" >> $configFile
+#echo "lang=\"$lang\"" >> $configFile
+#echo "usershell=\"$usershell\"" >> $configFile
+#echo "pkglistURL=\"$pkglistURL\"" >> $configFile
+#echo "services=(${services[@]})" >> $configFile
+#chmod +x $configFile
 #copy post install variables
 userFile="/mnt/userFile.sh"
 echo "#!/bin/sh" > $userFile
+echo "vconsolekeymap=\"$vconsolekeymap\"" >> $userFile
+#echo "x11keymap=\"$x11keymap\"" >> $userFile
 echo "dotfiles=\"$dotfiles\"" >> $userFile
 echo "aurhelper=\"$aurhelper\"" >> $userFile
 echo "aurhelperURL=\"$aurhelperURL\"" >> $userFile
 echo "wallpapers=\"$wallpapers\"" >> $userFile
 echo "aurpkglistURL=\"$aurpkglistURL\"" >> $userFile
 echo "userservices=(${userservices[@]})" >> $userFile
+cp /arch-install/post-install.sh /mnt
 chmod +x $userFile
 
 #####Install stage#####
@@ -62,12 +63,12 @@ pacstrap /mnt base base-devel linux linux-firmware vim git intel-ucode efibootmg
 #generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
 #enter chroot environment
-arch-chroot /mnt sh - << 'EOCHROOT'
+arch-chroot /mnt sh - << EOCHROOT
 
 	#source variables
-	source /config.sh
+	#source /config.sh
 	#remove file
-	rm /config.sh
+	#rm /config.sh
 	
 	#####Installation config#####
 	#set timezone
@@ -85,22 +86,8 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	echo "::1   localhost" >> /etc/hosts
 	echo "127.0.1.1 $hostname.localdomain $hostname" >> /etc/hosts
 	#grub
-	grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
+	grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 	grub-mkconfig -o /boot/grub/grub.cfg
-	
-	#####Install extra packages#####
-	pkgFile="/pkglist.txt"
-	#download pkglist
-	curl -L -o $pkgFile $pkglistURL
-	#remove comments
-	sed -i '/^#.*/d' $pkgFile
-	#install pkgs with pacman
-	while read pkg
-	    do
-	        pacman --needed --noconfirm -S $pkg
-	    done < $pkgFile
-	
-	rm $pkgFile
 	
 	#####Basic config#####
 	#pacman config
@@ -119,6 +106,19 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	#set environment variable for zsh
 	    echo "export ZDOTDIR=\$HOME/.config/zsh" >> /etc/zsh/zshenv
 	fi;
+
+	#####Install extra packages#####
+	pkgFile="/pkglist.txt"
+	#download pkglist
+	curl -L -o $pkgFile $pkglistURL
+	#remove comments
+	sed -i '/^#.*/d' $pkgFile
+	#install pkgs with pacman
+	while read pkg
+	    do
+	        pacman --needed --noconfirm -S $pkg
+	    done < $pkgFile
+	rm $pkgFile
 	
 	#####Create user#####
 	useradd -m -s /bin/$usershell $user
@@ -127,6 +127,7 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	echo "root:$rootpass" | chpasswd
 	
 	chown $user:$user /userFile.sh
+	chown $user:$user /post-install.sh
 	
 	#####Enable systemd services#####
 	for service in "${services[@]}"
@@ -134,65 +135,10 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	        systemctl enable $service
 	    done
 	
-	#####Run script as created user####
-	su $user sh - << 'EOF'
-	
-	#source variables
-	user="$(whoami)"
-	source /userFile.sh
-	#remove file
-	sudo rm /userFile.sh
-	
-	#####Clone repos#####
-	#dotfiles
-	mkdir -p $HOME/.repos/dotfiles
-	git clone --bare $dotfiles $HOME/.repos/dotfiles
-	function gdf (){
-	   /usr/bin/git --git-dir=$HOME/.repos/dotfiles --work-tree=$HOME $@
-	}
-	gdf checkout
-	gdf config status.showUntrackedFiles no
-	#clone wallpapers repo
-	mkdir $HOME/.repos/wallpapers
-	git clone $wallpapers $HOME/.repos/wallpapers
-	#install yay
-	mkdir $HOME/.repos/$aurhelper
-	git clone $aurhelperURL $HOME/.repos/$aurhelper
-	cd $HOME/.repos/$aurhelper
-	makepkg -si --noconfirm
-	
-	#####Install aur packages#####
-	aurFile="$HOME/aurlist.txt"
-	#download pkglist
-	curl -L -o $aurFile $aurpkglistURL
-	#remove comments
-	sed -i '/^#.*/d' $aurFile
-	#install pkgs with aur helper
-	while read pkg
-	    do
-	        $aurhelper --needed --noconfirm -S $pkg
-	    done < $aurFile
-	
-	rm $aurFile
-	
-	#####Enable user services#####
-	for service in "${userservices[@]}"
-	    do
-	        systemctl --user enable $service
-	    done
-
-EOF
-
-#####Final Setup#####
-#set ntp
-timedatectl set-ntp true
-#virtual console keymap
-localectl set-keymap --no-convert $vconsolekeymap
-#virtual x11 keymap
-localectl set-x11-keymap --no-convert $x11keymap
-
 EOCHROOT
 
 #finish
+echo "All done! Press enter to reboot..."
+read _
 umount -R /mnt
 reboot
