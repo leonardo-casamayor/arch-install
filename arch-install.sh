@@ -11,6 +11,7 @@ timezone="America/Argentina/Buenos_Aires"
 locale="en_US.UTF-8 UTF-8"
 lang="en_US.UTF-8"
 vconsolekeymap="us"
+x11keymap="us"
 usershell="zsh"
 pkglistURL="https://gitlab.com/leonardo.casamayor/dotfiles/-/raw/master/.config/pkglists/pkgs.txt"
 aurpkglistURL="https://gitlab.com/leonardo.casamayor/dotfiles/-/raw/master/.config/pkglists/aur.txt"
@@ -35,6 +36,7 @@ echo "timezone=\"$timezone\"" >> $configFile
 echo "locale=\"$locale\"" >> $configFile
 echo "lang=\"$lang\"" >> $configFile
 echo "vconsolekeymap=\"$vconsolekeymap\"" >> $configFile
+echo "x11keymap=\"$x11keymap\"" >> $configFile
 echo "usershell=\"$usershell\"" >> $configFile
 echo "pkglistURL=\"$pkglistURL\"" >> $configFile
 echo "services=(${services[@]})" >> $configFile
@@ -53,6 +55,7 @@ chmod +x $userFile
 #####Install stage#####
 timedatectl set-ntp true
 reflector --country Brazil --counrty Chile --latest 6 --sort rate --download-timeout 60 --save /etc/pacman.d/mirrorlist
+read _
 pacman -Syy
 pacstrap /mnt base base-devel linux linux-firmware vim git intel-ucode efibootmgr grub networkmanager
 
@@ -82,10 +85,10 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	echo "127.0.0.1 localhost" >> /etc/hosts
 	echo "::1   localhost" >> /etc/hosts
 	echo "127.0.1.1 $hostname.localdomain $hostname" >> /etc/hosts
-	#initramfs (for encyption only)
 	#grub
 	grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 	grub-mkconfig -o /boot/grub/grub.cfg
+    read _
 	
 	#####Install extra packages#####
 	pkgFile="/pkglist.txt"
@@ -106,6 +109,8 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	timedatectl set-ntp true
 	#virtual console keymap
 	localectl set-keymap --no-convert $vconsolekeymap
+	#virtual x11 keymap
+	localectl set-x11-keymap --no-convert $x11keymap
 	#pacman config
 	reflector --country Brazil --counrty Chile --latest 6 --sort rate --download-timeout 60 --save /etc/pa
 	pacman -Syy
@@ -114,7 +119,8 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	#add pacman custom repos
 	#sudoers
 	echo "Defaults insults" >> /etc/sudoers.d/01-Insults
-	echo "$user $hostname=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/02-Nopasswd
+	echo "$user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/02-Nopasswd
+    read _
 	#zsh setup
 	if [ $usershell = "zsh" ]; then
 	#install zsh
@@ -129,7 +135,6 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	usermod -aG wheel $user
 	echo "root:$rootpass" | chpasswd
 	
-	#make the user the owner of the post install variables file
 	chown $user:$user /userFile.sh
 	
 	#####Enable systemd services#####
@@ -164,6 +169,7 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	git clone $aurhelperURL $HOME/.repos/$aurhelper
 	cd $HOME/.repos/$aurhelper
 	makepkg -si --noconfirm
+    read _
 	
 	#####Install aur packages#####
 	aurFile="$HOME/aurlist.txt"
@@ -177,6 +183,7 @@ arch-chroot /mnt sh - << 'EOCHROOT'
 	        $aurhelper --needed --noconfirm -S $pkg
 	    done < $aurFile
 	
+    read _
 	rm $aurFile
 	
 	#####Enable user services#####
