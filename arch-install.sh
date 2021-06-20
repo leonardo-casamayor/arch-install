@@ -52,6 +52,7 @@ echo "aurpkglistURL=\"$aurpkglistURL\"" >> $userFile
 echo "userservices=(${userservices[@]})" >> $userFile
 cp /arch-install/post-install.sh /mnt
 chmod +x $userFile
+pkgFile="/pkglist.txt"
 
 #####Install stage#####
 timedatectl set-ntp true
@@ -108,7 +109,6 @@ arch-chroot /mnt sh - << EOCHROOT
 	fi;
 
 	#####Install extra packages#####
-	pkgFile="/pkglist.txt"
 	#download pkglist
 	curl -L -o $pkgFile $pkglistURL
 	#remove comments
