@@ -47,5 +47,5 @@ rm $aurFile
 #####Enable user services#####
 for service in "${userservices[@]}"
     do
-        systemctl --user enable $service
+        systemctl --user enable --now $service
     done
