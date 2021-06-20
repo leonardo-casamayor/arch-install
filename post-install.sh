@@ -11,8 +11,6 @@ sudo rm /userFile.sh
 sudo timedatectl set-ntp true
 #virtual console keymap
 sudo localectl set-keymap --no-convert $vconsolekeymap
-#virtual x11 keymap
-#sudo localectl set-x11-keymap --no-convert $x11keymap
 
 #####Clone repos#####
 #dotfiles

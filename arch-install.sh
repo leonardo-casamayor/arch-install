@@ -11,7 +11,6 @@ timezone="America/Argentina/Buenos_Aires"
 locale="en_US.UTF-8 UTF-8"
 lang="en_US.UTF-8"
 vconsolekeymap="us"
-#x11keymap="us"
 usershell="zsh"
 pkglistURL="https://gitlab.com/leonardo.casamayor/dotfiles/-/raw/master/.config/pkglists/pkgs.txt"
 aurpkglistURL="https://gitlab.com/leonardo.casamayor/dotfiles/-/raw/master/.config/pkglists/aur.txt"
@@ -26,33 +25,31 @@ services=(NetworkManager cups tlp)
 
 #####Copy variables to files#####
 #copy config variables
-#configFile="/mnt/config.sh"
-#echo "#!/bin/sh" > $configFile
-#echo "user=\"$user\"" >> $configFile
-#echo "userpass=\"$userpass\"" >> $configFile
-#echo "rootpass=\"$rootpass\"" >> $configFile
-#echo "hostname=\"$hostname\"" >> $configFile
-#echo "timezone=\"$timezone\"" >> $configFile
-#echo "locale=\"$locale\"" >> $configFile
-#echo "lang=\"$lang\"" >> $configFile
-#echo "usershell=\"$usershell\"" >> $configFile
-#echo "pkglistURL=\"$pkglistURL\"" >> $configFile
-#echo "services=(${services[@]})" >> $configFile
-#chmod +x $configFile
+configFile="/mnt/config.sh"
+echo "#!/bin/sh" > $configFile
+echo "user=\"$user\"" >> $configFile
+echo "userpass=\"$userpass\"" >> $configFile
+echo "rootpass=\"$rootpass\"" >> $configFile
+echo "hostname=\"$hostname\"" >> $configFile
+echo "timezone=\"$timezone\"" >> $configFile
+echo "locale=\"$locale\"" >> $configFile
+echo "lang=\"$lang\"" >> $configFile
+echo "usershell=\"$usershell\"" >> $configFile
+echo "pkglistURL=\"$pkglistURL\"" >> $configFile
+echo "services=(${services[@]})" >> $configFile
+chmod +x $configFile
 #copy post install variables
 userFile="/mnt/userFile.sh"
 echo "#!/bin/sh" > $userFile
 echo "vconsolekeymap=\"$vconsolekeymap\"" >> $userFile
-#echo "x11keymap=\"$x11keymap\"" >> $userFile
 echo "dotfiles=\"$dotfiles\"" >> $userFile
 echo "aurhelper=\"$aurhelper\"" >> $userFile
 echo "aurhelperURL=\"$aurhelperURL\"" >> $userFile
 echo "wallpapers=\"$wallpapers\"" >> $userFile
 echo "aurpkglistURL=\"$aurpkglistURL\"" >> $userFile
 echo "userservices=(${userservices[@]})" >> $userFile
-cp /arch-install/post-install.sh /mnt
+cp arch-install/post-install.sh /mnt
 chmod +x $userFile
-pkgFile="/pkglist.txt"
 
 #####Install stage#####
 timedatectl set-ntp true
@@ -64,12 +61,12 @@ pacstrap /mnt base base-devel linux linux-firmware vim git intel-ucode efibootmg
 #generate fstab
 genfstab -U /mnt >> /mnt/etc/fstab
 #enter chroot environment
-arch-chroot /mnt sh - << EOCHROOT
+arch-chroot /mnt sh - << 'EOCHROOT'
 
 	#source variables
-	#source /config.sh
+	source /config.sh
 	#remove file
-	#rm /config.sh
+	rm /config.sh
 	
 	#####Installation config#####
 	#set timezone
@@ -109,6 +106,7 @@ arch-chroot /mnt sh - << EOCHROOT
 	fi;
 
 	#####Install extra packages#####
+    pkgFile="/pkglist.txt"
 	#download pkglist
 	curl -L -o $pkgFile $pkglistURL
 	#remove comments
@@ -127,6 +125,7 @@ arch-chroot /mnt sh - << EOCHROOT
 	echo "root:$rootpass" | chpasswd
 	
 	chown $user:$user /userFile.sh
+    cp /post-install.sh /home/$user/
 	chown $user:$user /post-install.sh
 	
 	#####Enable systemd services#####
