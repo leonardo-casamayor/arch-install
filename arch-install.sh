@@ -6,7 +6,7 @@
 user="leonardo"
 userpass=""
 rootpass=""
-hostname="azbe"
+hostname="azb"
 timezone="America/Argentina/Buenos_Aires"
 locale="en_US.UTF-8 UTF-8"
 lang="en_US.UTF-8"
@@ -20,7 +20,7 @@ aurhelperURL="https://aur.archlinux.org/yay.git"
 dotfiles="https://gitlab.com/leonardo.casamayor/dotfiles.git"
 wallpapers="https://gitlab.com/leonardo.casamayor/wallpapers.git"
 #systemctl service to enable
-userservices=(syncthing)
+userservices=(syncthing gdm)
 services=(NetworkManager cups tlp)
 
 #####Copy variables to files#####
@@ -86,6 +86,10 @@ echo "127.0.1.1 $hostname.localdomain $hostname" >> /etc/hosts
 #grub
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
+#if btrfs add to modules from 10:40 in video
+#if encryption add to hooks
+#if either mkinitcpio -p linux
+#if encryption device uuid in grub config and rebuild grub config
 
 #####Basic config#####
 #pacman config
@@ -139,5 +143,5 @@ EOCHROOT
 #finish
 echo "All done! Press enter to reboot..."
 read _
-umount -R /mnt
-reboot
+#umount -R /mnt
+#reboot
